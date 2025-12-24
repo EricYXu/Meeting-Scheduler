@@ -8,11 +8,6 @@ venv/
 .env/
 .venv/
 
-# Flask
-instance/
-*.db
-*.sqlite3
-
 # Environment variables
 .env
 .env.*
