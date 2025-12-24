@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Meeting Scheduler{% endblock %}
+
+{% block content %}
+<div class="container py-5 py-md-6">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-xl-6">
+            <!-- Flash messages (validation, success, etc.) -->
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div class="mb-3">
+                  {% for message in messages %}
+                    <div class="alert alert-info mb-2" role="alert">
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <!-- Discreet admin button + password modal -->
+            <div class="d-flex justify-content-end mb-2">
+              <button
+                type="button"
+                class="btn btn-link p-0 small text-muted"
+                data-bs-toggle="modal"
+                data-bs-target="#adminModal"
+                style="text-decoration:none;"
+                aria-label="Admin"
+              >
+                Admin
+              </button>
+            </div>
+
+            <div class="modal fade" id="adminModal" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <form method="POST" action="{{ url_for('admin_login') }}">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Admin access</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                      <label for="admin_password" class="form-label">Password</label>
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="admin_password"
+                        name="admin_password"
+                        autocomplete="current-password"
+                        required
+                      >
+                      <div class="form-text">
+                        Authorized users only.
+                      </div>
+                    </div>
+
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                      <button type="submit" class="btn btn-dark">Continue</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <!-- end admin modal -->
+
+            <div class="card hero-card p-4 p-md-5">
+                <div class="card-body">
+                    <h1 class="hero-title h3 mb-3">
+                        Schedule a meeting with me!
+                    </h1>
+                    <p class="hero-subtitle mb-4">
+                        Enter your official Harvard or MIT email to get a 6-digit verification code.
+                        Once verified, you may select an available time slot to reserve.
+                    </p>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                Email
+                            </label>
+                            <input
+                              type="email"
+                              class="form-control form-control-lg"
+                              id="email"
+                              name="email"
+                              placeholder="Enter your .edu email"
+                              required
+                            >
+                            <div class="form-text">
+                                You must use your official educational email address that ends with '.edu'.
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-dark btn-lg w-100">
+                            Send verification code
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-4 small text-muted">
+                Please email me any issues at [my first name] + [my last name] + [@college.harvard.edu]. Thanks!
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

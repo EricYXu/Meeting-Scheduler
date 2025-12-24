@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Meeting Scheduler{% endblock %}
+
+{% block content %}
+<div class="container py-5 py-md-6">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <!-- Flashed messages -->
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div class="mb-3">
+                  {% for message in messages %}
+                    <div class="alert alert-info mb-2" role="alert">
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <div class="card hero-card p-4 p-md-5">
+                <div class="card-body">
+                    <h1 class="hero-title h3 mb-3">
+                        Choose a time
+                    </h1>
+                    <p class="hero-subtitle mb-4">
+                        Click a time on the left, then fill out the form on the right to reserve it.
+                    </p>
+
+                    <div class="row g-4">
+                        <!-- LEFT: time buttons -->
+                        <div class="col-md-5">
+                            <div class="d-flex flex-column gap-3">
+                                {% for slot in available_times %}
+                                <button
+                                    type="button"
+                                    class="btn btn-dark btn-lg w-100 text-start slot-button"
+                                    style="padding-block: 0.9rem;"
+                                    data-slot-id="{{ slot.id }}"
+                                >
+                                    {{ slot.start_time.strftime("%b %d, %Y • %I:%M %p") }}
+                                    -
+                                    {{ slot.end_time.strftime("%I:%M %p") }}
+                                </button>
+                                {% else %}
+                                <p class="text-muted text-center">No available times.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- RIGHT: reservation form (hidden until a slot is chosen) -->
+                        <div class="col-md-7">
+                            <div
+                              id="reservation-form-wrapper"
+                              class="border rounded-4 p-4 h-100 d-none"
+                              style="background: #f8fafc;"
+                            >
+                                <h2 class="h5 mb-3">Reserve this time</h2>
+                                <p class="mb-3 text-muted">
+                                    You're reserving:
+                                    <strong id="selected-time-label"></strong>
+                                </p>
+
+                                <form method="POST">
+                                    <!-- hidden input where JS puts the chosen time -->
+                                    <input type="hidden" name="time_slot" id="time_slot_input">
+
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">
+                                            Your name
+                                        </label>
+                                        <input
+                                          type="text"
+                                          class="form-control form-control-lg"
+                                          id="name"
+                                          name="name"
+                                          placeholder="First and last name"
+                                          required
+                                        >
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="notes" class="form-label">
+                                            Notes (optional)
+                                        </label>
+                                        <textarea
+                                          class="form-control"
+                                          id="notes"
+                                          name="notes"
+                                          rows="3"
+                                          placeholder="Anything I should know before we meet?"
+                                        ></textarea>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-dark btn-lg w-100">
+                                        Confirm reservation
+                                    </button>
+
+                                    <p class="small text-muted mb-0 mt-2">
+                                        After you confirm, you'll receive a confirmation and I'll add this
+                                        to my calendar.
+                                    </p>
+                                </form>
+                            </div>
+
+                            <!-- Placeholder when nothing is selected yet -->
+                            <div
+                              id="reservation-placeholder"
+                              class="h-100 d-flex flex-column justify-content-center align-items-center text-muted"
+                            >
+                                <p class="mb-1">Select a time on the left to reserve it.</p>
+                                <p class="small mb-0">The reservation form will appear here.</p>
+                            </div>
+                        </div>
+                    </div> <!-- /row -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const slotButtons = document.querySelectorAll(".slot-button");
+    const formWrapper = document.getElementById("reservation-form-wrapper");
+    const placeholder = document.getElementById("reservation-placeholder");
+    const selectedTimeLabel = document.getElementById("selected-time-label");
+    const timeInput = document.getElementById("time_slot_input");
+    const nameInput = document.getElementById("name");
+
+    slotButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+        const slotId = this.dataset.slotId;          // <-- gets data-slot-id
+        const slotLabel = this.textContent.trim();   // <-- readable "Dec 23 ... – ..."
+
+        // Visually mark the active button
+        slotButtons.forEach(b => b.classList.remove("active"));
+        this.classList.add("active");
+
+        // Update form content
+        selectedTimeLabel.textContent = slotLabel;   // show formatted time to user
+        timeInput.value = slotId;                    // submit ID to Flask
+
+        // Show form, hide placeholder
+        formWrapper.classList.remove("d-none");
+        placeholder.classList.add("d-none");
+
+        // Focus name field for faster flow
+        if (nameInput) nameInput.focus();
+        });
+    });
+});
+</script>
+{% endblock %}
+

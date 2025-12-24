@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Meeting Scheduler{% endblock %}
+
+{% block content %}
+<div class="container py-5 py-md-6">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-xl-6">
+            <!-- Flash messages (validation, success, etc.) -->
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div class="mb-3">
+                  {% for message in messages %}
+                    <div class="alert alert-info mb-2" role="alert">
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <div class="card hero-card p-4 p-md-5">
+                <div class="card-body">
+                    <h1 class="hero-title h3 mb-3">
+                        Verify your email
+                    </h1>
+                    <p class="hero-subtitle mb-4">
+                        Enter the six-digit code that was sent to the email you entered.
+                    </p>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                Six-Digit Verification Code
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control form-control-lg"
+                              id="verification_code"
+                              name="verification_code"
+                              placeholder="Enter your six-digit verification code"
+                              required
+                            >
+                        </div>
+
+                        <button type="submit" class="btn btn-dark btn-lg w-100">
+                            Verify
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
